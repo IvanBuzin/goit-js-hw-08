@@ -64,52 +64,25 @@ const images = [
   },
 ];
 
-const ulEl = document.querySelector('.gallery');
-const createGalEl = images.map
-  (item => 
-  `<li><img 
-  src=${item.preview} 
-  alt=${item.description} width=360 height=300/></li>`)
-  .join('');
-ulEl.insertAdjacentHTML('afterbegin', createGalEl);
 
-const galleryRef = document.querySelector(".gallery");
-galleryRef.classList.add("js-gallery");
-const headRef = document.querySelector("head");
+const marcup = images.map((image) =>
+  `<li clas="gallery-item">
+  <a clas="gallery-link" href="image.original (edited)">
+  <img clas="gallery-image"
+  src="${image.preview}"
+  data-source="${image.original}
+  alt="${image.description} width=360 height=200"
+  />
+  </a>
+  </li>`).join('');
 
-headRef.insertAdjacentHTML(
-  "beforeend", `<style> 
-.js-gallery {
-  display: flex;
-  width: 1440px;
-  padding: 100px 156px;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 24px;
-  row-gap: 48px;
-  background: #fff;
-  flex-wrap: wrap;
-}
-.js-gallery > li {
-  width: calc((100% - 48px) / 3);
-  box-sizing: border-box;
-  height: 300px;
-  flex-shrink: 0;
-  padding: 0;
-  border-radius: 0%;
-  border: 0cap; 
-}
-</style>`
+const gallery = document.querySelector('.gallery');
+gallery.innerHTML = marcup;
+
+const galleryLink = document.querySelector('.gallery-link');
+galleryLink.addEventListener('click', (event) => {
+  event.preventDefault();
+});
+
+
  
-);
-
-
-
-document.querySelector('button.image').onclick = () => {
-
-	basicLightbox.create(`
-		<img width="1400" height="900" src="https://placehold.it/1400x900">
-	`).show()
-
-}
