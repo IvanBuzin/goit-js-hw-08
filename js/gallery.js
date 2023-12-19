@@ -64,25 +64,64 @@ const images = [
   },
 ];
 
+let handleKeyPress;
+const galleryContainer = document.querySelector(".gallery");
+galleryContainer.innerHTML = images.reduce(
+  (html, image) =>
+    html +
+    `
+<li class="gallery-item">
+        <a
+          class="gallery-link"
+          href="${image.original}"
+        >
+          <img
+            class="gallery-image"
+            src="${image.preview}"
+            data-source="${image.original}"
+            alt="${image.description}"
+          />
+        </a>
+      </li>
+`,
+  ""
+);
 
-const marcup = images.map((image) =>
-  `<li clas="gallery-item">
-  <a clas="gallery-link" href="image.original (edited)">
-  <img clas="gallery-image"
-  src="${image.preview}"
-  data-source="${image.original}
-  alt="${image.description} width=360 height=200"
-  />
-  </a>
-  </li>`).join('');
-
-const gallery = document.querySelector('.gallery');
-gallery.innerHTML = marcup;
-
-const galleryLink = document.querySelector('.gallery-link');
-galleryLink.addEventListener('click', (event) => {
+galleryContainer.addEventListener("click", (event) => {
   event.preventDefault();
+  const imageOriginalLink = event.target.dataset.source;
+
+  if (imageOriginalLink) {
+    const originalImg = imageOriginalLink;
+    console.log(originalImg);
+
+    const modal = basicLightbox.create(
+      `
+    <img src="${originalImg}">
+`,
+      {
+        onShow: (instance) => {
+          const handleKeyPress = (event) => {
+            if (event.key === "Escape") {
+              instance.close();
+            }
+          };
+
+          document.addEventListener("keydown", handleKeyPress);
+
+          instance.element().addEventListener("click", (event) => {
+            if (event.target.tagName === "IMG") {
+              return;
+            }
+            instance.close();
+          });
+        },
+        onClose: (instance) => {
+          document.removeEventListener("keydown", handleKeyPress);
+        },
+      }
+    );
+
+    modal.show();
+  }
 });
-
-
- 
