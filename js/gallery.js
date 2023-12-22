@@ -64,17 +64,36 @@ const images = [
   },
 ];
 
-let handleKeyPress;
 const galleryContainer = document.querySelector(".gallery");
+
+ const modal = basicLightbox.create(
+      `
+    <img class="big-image" src="" width="1112" height="640" flex-shrink="0">
+`,
+      {
+        onShow: () => {
+          document.addEventListener("keydown", handleKeyPress);          
+          },
+        onClose: () => {
+          document.removeEventListener("keydown", handleKeyPress);
+        }
+      }
+    );
+
+var handleKeyPress;
+
+function handleKeyPress(event) {
+  if (event.key === "Escape") {
+              modal.close();
+            }
+}
+     
 galleryContainer.innerHTML = images.reduce(
   (html, image) =>
     html +
     `
 <li class="gallery-item">
-        <a
-          class="gallery-link"
-          href="${image.original}"
-        >
+        <a class="gallery-link" href="${image.original}">
           <img
             class="gallery-image"
             src="${image.preview}"
@@ -82,46 +101,16 @@ galleryContainer.innerHTML = images.reduce(
             alt="${image.description}"
           />
         </a>
-      </li>
-`,
-  ""
-);
+      </li>`, "" );
 
 galleryContainer.addEventListener("click", (event) => {
   event.preventDefault();
-  const imageOriginalLink = event.target.dataset.source;
+  if (event.target.nodeName !== "IMG") { return; }
 
-  if (imageOriginalLink) {
-    const originalImg = imageOriginalLink;
-    console.log(originalImg);
+  const modalImg = modal.element().querySelector('.big-image');
+  modalImg.src = event.target.dataset.source;
+  
+  modal.show();
+}
+);
 
-    const modal = basicLightbox.create(
-      `
-    <img src="${originalImg}">
-`,
-      {
-        onShow: (instance) => {
-          const handleKeyPress = (event) => {
-            if (event.key === "Escape") {
-              instance.close();
-            }
-          };
-
-          document.addEventListener("keydown", handleKeyPress);
-
-          instance.element().addEventListener("click", (event) => {
-            if (event.target.tagName === "IMG") {
-              return;
-            }
-            instance.close();
-          });
-        },
-        onClose: (instance) => {
-          document.removeEventListener("keydown", handleKeyPress);
-        },
-      }
-    );
-
-    modal.show();
-  }
-});
